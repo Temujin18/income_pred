@@ -1,0 +1,36 @@
+[
+  {
+    "user_id": 18563,
+    "age": 41,
+    "workclass": "Private",
+    "fnlwgt": 88638,
+    "education": "Bachelors",
+    "education_num": 13,
+    "marital_status": "Never-married",
+    "occupation": "Craft-repair",
+    "relationship": "Unmarried",
+    "race": "Black",
+    "sex": "Male",
+    "capital_gain": 0,
+    "capital_loss": 2824,
+    "hours_per_week": 40,
+    "native_country": "United-States"
+  },
+  {
+    "user_id": 94273,
+    "age": 54,
+    "workclass": "Self-emp-not-inc",
+    "fnlwgt": 336188,
+    "education": "Bachelors",
+    "education_num": 13,
+    "marital_status": "Married-civ-spouse",
+    "occupation": "Exec-managerial",
+    "relationship": "Husband",
+    "race": "White",
+    "sex": "Male",
+    "capital_gain": 0,
+    "capital_loss": 2603,
+    "hours_per_week": 40,
+    "native_country": "Taiwan"
+  }
+]
