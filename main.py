@@ -1,10 +1,10 @@
-from typing import Optional, List
+from typing import List
 
 from fastapi import FastAPI
 from pydantic import BaseModel
 from joblib import load
-from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import redis
 
 from training import le, scaler, X, categorical
 
@@ -32,24 +32,38 @@ app = FastAPI()
 
 model = load("census_model.joblib")
 
-@app.post("/predict/")
-async def predict_income(features: List[Features]):
+r = redis.Redis()
 
-    X_input = pd.DataFrame()
-    result = []
-    for feature in features:
-        X_input = X_input.append(feature.__values__, ignore_index=True)
-
-    users = X_input['user_id']
-    X_input = X_input.drop(['user_id'], axis=1)
-    
+def encode_input(X_input):
     for category in categorical:
         X_input[category] = le.fit_transform(X_input[category])
     
-    X_input = pd.DataFrame(scaler.fit_transform(X_input), columns=X_input.columns)
+    X_input = pd.DataFrame(scaler.fit_transform(X_input), index=X_input['user_id'], columns=X_input.columns)
 
-    preds = model.predict(X_input)
-    for user, pred in zip(users, preds):
-        result.append({'user_id' : user, 'income' : str(pred)}) 
+    return X_input.drop('user_id', axis=1)
+
+@app.post("/predict/")
+async def predict_income(features: List[Features]):
+
+    result = []
+    X_input = pd.DataFrame()
+    for feature in features:
+        X_input = X_input.append(feature.__values__, ignore_index=True)
+
+    users = X_input['user_id'].astype(int)
+
+    X_input = encode_input(X_input)
+
+    with r.pipeline() as pipe:
+        for user in users:
+            if r.exists(user):
+                result.append({'user_id' : user, 'income' : r.get(user)})
+            else:
+                pred = model.predict(X_input.loc[user].values.reshape(1,-1))
+                pipe.set(user, ''.join(pred))
+                result.append({'user_id' : user, 'income' : ''.join(pred)})
+
+        pipe.execute()
+    
 
     return result
