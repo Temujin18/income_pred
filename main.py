@@ -31,7 +31,7 @@ class Features(BaseModel):
 
 app = FastAPI()
 
-model = load("census_model.joblib")
+model = load("model/census_model.joblib")
 
 r = redis.Redis()
 
