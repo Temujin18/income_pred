@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from joblib import load
 import pandas as pd
 import redis
+from datetime import timedelta
 
 from training import le, scaler, X, categorical
 
@@ -60,7 +61,7 @@ async def predict_income(features: List[Features]):
                 result.append({'user_id' : user, 'income' : r.get(user)})
             else:
                 pred = model.predict(X_input.loc[user].values.reshape(1,-1))
-                pipe.set(user, ''.join(pred))
+                pipe.setex(user, timedelta(minutes=10), ''.join(pred))
                 result.append({'user_id' : user, 'income' : ''.join(pred)})
 
         pipe.execute()
