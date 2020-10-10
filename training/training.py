@@ -8,13 +8,14 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import StandardScaler
 
 from joblib import dump
+import os
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
 # Load dataset
-file = "adult_census.csv"
+file = os.path.join(os.path.abspath('training'),"adult_census.csv")
 df = pd.read_csv(file, encoding="latin-1")
 
 # Clean up Missing values

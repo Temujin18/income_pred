@@ -7,7 +7,7 @@ import pandas as pd
 import redis
 from datetime import timedelta
 
-from training import le, scaler, X, categorical
+from training.training import le, scaler, X, categorical
 
 class Features(BaseModel):
     user_id: int
